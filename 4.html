@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Задание 4</title>
+   
+  </head>
+  <body>
+    <div class="container">
+      <h1>Введите два числа в диапазоне от 100 до 300</h1>
+      <form>
+        <input type="number" id="firstNumber">
+        <input type="number" id="secondNumber">
+        <button type="submit">Отправить</button>
+      </form>
+      <div id="result"></div>
+    </div>
+    <script>
+    const form = document.querySelector('form');
+      const result = document.getElementById('result');
+      
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        
+        const firstNumber = parseInt(document.getElementById('firstNumber').value);
+        const secondNumber = parseInt(document.getElementById('secondNumber').value);
+        
+        if (isNaN(firstNumber) || isNaN(secondNumber) || 
+            firstNumber < 100 || firstNumber > 300 ||
+            secondNumber < 100 || secondNumber > 300) {
+          result.textContent = 'Одно из чисел вне диапазона от 100 до 300';
+        } else {
+          const url = `https://picsum.photos/${firstNumber}/${secondNumber}`;
+          
+          fetch(url)
+            .then(response => {
+              const image = document.createElement('img');
+              image.src = response.url;
+              result.textContent = '';
+              result.appendChild(image);
+            })
+            .catch(error => console.error(error));
+        }
+      });
+
+    </script>
+  </body>
+</html>

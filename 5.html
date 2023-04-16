@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Задание 5</title>
+	<meta charset="UTF-8">
+</head>
+<body>
+	<h1>Запрос картинок</h1>
+	<label for="page-input">Номер страницы:</label>
+	<input id="page-input" type="text">
+	<label for="limit-input">Лимит:</label>
+	<input id="limit-input" type="text">
+	<button id="submit-btn">Запрос</button>
+	<div id="images-container"></div>
+	<div id="error-message"></div>
+
+	<script>
+		const pageInput = document.getElementById("page-input");
+		const limitInput = document.getElementById("limit-input");
+		const submitBtn = document.getElementById("submit-btn");
+		const imagesContainer = document.getElementById("images-container");
+		const errorMessage = document.getElementById("error-message");
+
+
+		const lastRequest = localStorage.getItem("lastRequest");
+		if (lastRequest) {
+			imagesContainer.innerHTML = lastRequest;
+		}
+
+		submitBtn.addEventListener("click", () => {
+			const page = parseInt(pageInput.value);
+			const limit = parseInt(limitInput.value);
+
+			function isInInterval(number) {
+              return !isNaN(number) && number > 0 && number < 11
+            }
+
+			if (!isInInterval(page) && isInInterval(limit)) {
+				errorMessage.innerHTML = "Номер страницы вне диапазона от 1 до 10";
+				return;
+			} else if (!isInInterval(limit) && isInInterval(page)) {
+				errorMessage.innerHTML = "Лимит вне диапазона от 1 до 10";
+				return;
+			} else if (!isInInterval(limit) && !isInInterval(page)) {
+                errorMessage.innerHTML = "Номер страницы и лимит вне диапазона от 1 до 10";
+                 return;
+            }
+
+            
+			fetch(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`)
+				.then(response => {
+					if (response.ok) {
+						return response.json();
+					} else {
+						throw new Error("Ошибка HTTP: " + response.status);
+					}
+				})
+				.then(data => {
+					let imagesHTML = "";
+					for (let i = 0; i < data.length; i++) {
+						imagesHTML += `<img class="image" src="${data[i].download_url}">`;
+					}
+					imagesContainer.innerHTML = imagesHTML;
+					errorMessage.innerHTML = "";
+					
+					localStorage.setItem("lastRequest", imagesHTML);
+				})
+				.catch(error => {
+					console.log(error);
+					errorMessage.innerHTML = "Произошла ошибка при запросе картинок";
+				});
+        });
+	</script>
+</body>
+</html>

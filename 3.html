@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <title>Document</title>
+</head>
+<body>
+    <input type="number" id="input-number">
+     <button id="submit-button">Submit</button>
+     <div id="result"></div>
+     <script>
+        const inputNumber = document.getElementById("input-number");
+        const submitButton = document.getElementById("submit-button");
+        const result = document.getElementById("result");
+
+        document.getElementById("submit-button").addEventListener("click", function() {
+        const number = parseInt(document.getElementById("input-number").value);
+            if (isNaN(number) || number < 1 || number > 10) {
+         document.getElementById("result").textContent = "число вне диапазона от 1 до 10";
+            } else {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `https://picsum.photos/v2/list?limit=${number}`);
+                xhr.onload = function() {
+            if (xhr.status === 200) {
+        const response = JSON.parse(xhr.responseText);
+        const imageUrls = response.map(item => item.download_url);
+        const imagesHtml = imageUrls.map(url => `<img src="${url}">`).join("");
+        document.getElementById("result").innerHTML = imagesHtml;
+      } else {
+        document.getElementById("result").textContent = "Ошибка при загрузке изображений";
+      }
+        };
+     xhr.send();
+     }
+    });
+
+
+     </script>
+</body>
+</html>
+
+
